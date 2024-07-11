@@ -1,5 +1,6 @@
 # peaker
 
+一款高质量的弱口令扫描工具
 支持的协议
 1. couchdb 
 2. 达梦数据库
@@ -26,7 +27,7 @@
 23. tomcat
 
 
-使用方法参考 cmd/main.go
+使用方法参考 _example/main.go
 
 参数说明：
 1. --ip_list -i 目标文件地址 默认：iplist.txt，目标文件格式 192.168.103.156:22|SSH  不支持的协议会忽略
@@ -41,11 +42,11 @@
    
  ## 构建编译
 (如果windows下执行错误，单个设置环境变量)
-windows：
+### windows：
     go build -o peaker.exe ./cmd/main.go
-linux: 
+### linux: 
     set CGO_ENABLED=0 && set GOOS=linux && set GOARCH=amd64  
     go build -o peaker.exe ./cmd/main.go
-mac:
+### mac:
     set CGO_ENABLED=0 && set GOOS=darwin && set GOARCH=amd64  
     go build -o peaker.exe ./cmd/main.go
