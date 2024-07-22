@@ -25,7 +25,18 @@
 21. ssh 
 22. telnet 
 23. tomcat
-
+24. sqlserver //todo
+25. WinRM
+26. VNC
+27. SVN
+28. WebLogic
+29. jboss
+30. zookeeper
+31. wmi
+32. smtp
+33. pop3
+34. iamp
+35. webdav
 
 使用方法参考 _example/main.go
 
