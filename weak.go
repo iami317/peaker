@@ -88,7 +88,6 @@ func (w *Weak) RunTask(ipList []IpAddr, usersDict []string, passDict []string, r
 func (w *Weak) RunIpWithTimeout(addr IpAddr, usersDict []string, passDict []string, resultChan chan interface{}, sema *hubur.SizedWaitGroup) {
 	defer func() {
 		sema.Done()
-		close(resultChan)
 	}()
 	done := make(chan struct{}, 1)
 	param := RunIpData{
