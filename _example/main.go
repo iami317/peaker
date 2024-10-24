@@ -127,9 +127,9 @@ func RunServer(ctx *cli.Context) error {
 		return err
 	}
 	resultChan := make(chan interface{}, 1)
-	defer func() {
-		close(resultChan)
-	}()
+	//defer func() {
+	//	close(resultChan)
+	//}()
 	w.RunTask(ipList, userDict, passDict, resultChan)
 	for v := range resultChan {
 		r := v.(*peaker.ResultOut)
