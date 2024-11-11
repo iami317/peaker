@@ -75,7 +75,6 @@ func (w *Weak) RunTask(ipList []IpAddr, usersDict []string, passDict []string, r
 	if w.Config.CheckAlive {
 		ipList = w.CheckAlive(ipList)
 	}
-	//sema := NewSema(w.Config.Thread)
 	sema := hubur.NewSizedWaitGroup(w.Config.Thread)
 	for _, addr := range ipList {
 		if len(addr.Ip) > 0 && addr.Port > 0 && len(addr.Protocol) > 0 {
@@ -103,7 +102,7 @@ func (w *Weak) RunIpWithTimeout(addr IpAddr, usersDict []string, passDict []stri
 	go w.RunIp(param)
 
 	select {
-	case <-time.After(time.Second * 200):
+	case <-time.After(w.Config.TimeOut):
 		w.Config.Logger.Errorf("ip:%v-%v-%v,执行超时,单个ip限制 %v 秒", param.Addr.Ip, param.Addr.Port, param.Addr.Protocol, w.Config.TimeOut.Seconds())
 		return
 	case <-done:
@@ -238,7 +237,7 @@ func (w *Weak) RunIp(i interface{}) {
 					}
 					return
 				}(paramScan, rsOut, w.Config.DebugMode, w.Config.Logger)
-				time.Sleep(time.Millisecond * 100)
+				//time.Sleep(time.Millisecond * 20)
 			}
 			if protocol == plugins.REDIS {
 				break
