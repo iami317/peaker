@@ -100,9 +100,9 @@ func (w *Weak) RunIpWithTimeout(addr IpAddr, usersDict []string, passDict []stri
 	go w.RunIp(param)
 
 	select {
-	//case <-time.After(time.Second * 200):
-	//	w.Config.Logger.Errorf("ip:%v-%v-%v,执行超时,单个ip限制 %v 秒", param.Addr.Ip, param.Addr.Port, param.Addr.Protocol, w.Config.TimeOut.Seconds())
-	//	return
+	case <-time.After(time.Second * 200):
+		w.Config.Logger.Errorf("ip:%v-%v-%v,执行超时,单个ip限制 %v 秒", param.Addr.Ip, param.Addr.Port, param.Addr.Protocol, w.Config.TimeOut.Seconds())
+		return
 	case <-done:
 		return
 	}

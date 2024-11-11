@@ -46,8 +46,8 @@ var (
 
 const (
 	SshThread              = 3 //ssh并发数
-	DefaultThread          = 50
-	DefaultTs              = time.Second * 5
+	DefaultThread          = 200
+	DefaultTs              = time.Second * 3
 	Unauthorized  Class    = 1
 	WeakPass      Class    = 2
 	UnKnow        Class    = 3
