@@ -70,7 +70,7 @@ func NewWeak(c Config) *Weak {
 func (w *Weak) RunTask(ipList []IpAddr, usersDict []string, passDict []string, resultChan chan interface{}) {
 	defer func() {
 		if e := recover(); e != nil {
-			w.Config.Logger.Error(fmt.Sprintf("RunTask ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
+			w.Config.Logger.Warnf(fmt.Sprintf("RunTask ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
 		}
 		close(resultChan)
 	}()
@@ -94,14 +94,14 @@ func (w *Weak) RunTask(ipList []IpAddr, usersDict []string, passDict []string, r
 func (w *Weak) RunIpWithTimeout(addr IpAddr, usersDict []string, passDict []string, resultChan chan interface{}, sema *hubur.SizedWaitGroup) {
 	defer func() {
 		if e := recover(); e != nil {
-			w.Config.Logger.Error(fmt.Sprintf("RunIpWithTimeout ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
+			w.Config.Logger.Warnf(fmt.Sprintf("RunIpWithTimeout ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
 		}
 		sema.Done()
 	}()
 	done := make(chan struct{}, 1)
 	defer func() {
 		if e := recover(); e != nil {
-			w.Config.Logger.Error(fmt.Sprintf("RunIpWithTimeout111 ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
+			w.Config.Logger.Warnf(fmt.Sprintf("RunIpWithTimeout111 ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
 		}
 		close(done)
 	}()
@@ -126,7 +126,7 @@ func (w *Weak) RunIpWithTimeout(addr IpAddr, usersDict []string, passDict []stri
 func (w *Weak) RunIp(i interface{}) {
 	defer func() {
 		if e := recover(); e != nil {
-			w.Config.Logger.Error(fmt.Sprintf("RunIp ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
+			w.Config.Logger.Warnf(fmt.Sprintf("RunIp ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
 		}
 	}()
 	input := i.(RunIpData)
