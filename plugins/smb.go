@@ -12,7 +12,7 @@ func UnauthorizedSmb(i interface{}) interface{} {
 	result := ScanResult{
 		Single: s,
 	}
-	conn, err := net.Dial("tcp", fmt.Sprintf("%v:%v", s.Ip, s.Port))
+	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", s.Ip, s.Port), s.TimeOut)
 	if err == nil {
 		defer conn.Close()
 		d := &smb2.Dialer{
