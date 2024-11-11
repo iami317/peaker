@@ -67,6 +67,9 @@ func NewWeak(c Config) *Weak {
 
 // RunTask 以ip为单位并发执行
 func (w *Weak) RunTask(ipList []IpAddr, usersDict []string, passDict []string, resultChan chan interface{}) {
+	defer func() {
+		close(resultChan)
+	}()
 	w.Config.Logger.Verbosef("Start scanning %v targets", len(ipList))
 	//是否检查ip是否存活
 	if w.Config.CheckAlive {
