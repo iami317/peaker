@@ -112,9 +112,6 @@ func (w *Weak) RunIpWithTimeout(addr IpAddr, usersDict []string, passDict []stri
 
 func (w *Weak) RunIp(i interface{}) {
 	input := i.(RunIpData)
-	defer func() {
-		close(input.ResultChan)
-	}()
 	protocol := plugins.Protocol(strings.ToUpper(input.Addr.Protocol))
 	s, ok := plugins.ScanMap[protocol]
 	if !ok {
