@@ -9,6 +9,7 @@ import (
 	"github.com/iami317/peaker/plugins"
 	"net"
 	"os"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"sync"
@@ -68,6 +69,9 @@ func NewWeak(c Config) *Weak {
 // RunTask 以ip为单位并发执行
 func (w *Weak) RunTask(ipList []IpAddr, usersDict []string, passDict []string, resultChan chan interface{}) {
 	defer func() {
+		if e := recover(); e != nil {
+			w.Config.Logger.Error(fmt.Sprintf("RunTask ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
+		}
 		close(resultChan)
 	}()
 	w.Config.Logger.Verbosef("Start scanning %v targets", len(ipList))
@@ -89,9 +93,18 @@ func (w *Weak) RunTask(ipList []IpAddr, usersDict []string, passDict []string, r
 
 func (w *Weak) RunIpWithTimeout(addr IpAddr, usersDict []string, passDict []string, resultChan chan interface{}, sema *hubur.SizedWaitGroup) {
 	defer func() {
+		if e := recover(); e != nil {
+			w.Config.Logger.Error(fmt.Sprintf("RunIpWithTimeout ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
+		}
 		sema.Done()
 	}()
 	done := make(chan struct{}, 1)
+	defer func() {
+		if e := recover(); e != nil {
+			w.Config.Logger.Error(fmt.Sprintf("RunIpWithTimeout111 ERROR:%#v;stack=%s\n", e, string(debug.Stack())))
+		}
+		close(done)
+	}()
 	param := RunIpData{
 		Addr:       addr,
 		UserDict:   usersDict,
