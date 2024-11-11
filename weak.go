@@ -234,7 +234,7 @@ func (w *Weak) RunIp(i interface{}) {
 					}
 					return
 				}(paramScan, rsOut, w.Config.DebugMode, w.Config.Logger)
-				//time.Sleep(time.Millisecond * 20)
+				time.Sleep(time.Millisecond * 10)
 			}
 			if protocol == plugins.REDIS {
 				break
