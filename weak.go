@@ -215,6 +215,9 @@ func (w *Weak) RunIp(i interface{}) {
 		defer scanFuncPool.Close()
 		sema := hubur.NewSizedWaitGroup(thread)
 		for _, user := range input.UserDict {
+			if len(rsOut.Crack) > 0 && input.Addr.Protocol == rsOut.Addr.Protocol {
+				break
+			}
 			for _, pass := range input.PassDict {
 				sema.Add()
 				paramScan := plugins.Single{
@@ -225,7 +228,10 @@ func (w *Weak) RunIp(i interface{}) {
 					Username: user,
 					Password: pass,
 				}
-
+				if len(rsOut.Crack) > 0 && input.Addr.Protocol == rsOut.Addr.Protocol {
+					sema.Done()
+					break
+				}
 				go func(param plugins.Single, rsOut *ResultOut, mode bool, l *logx.Logger) {
 					defer func() {
 						sema.Done()
