@@ -1,5 +1,6 @@
 package plugins
 
+/*
 import (
 	_ "github.com/denisenkom/go-mssqldb"
 
@@ -46,3 +47,6 @@ func UnauthorizedMssql(i interface{}) interface{} {
 
 	return result
 }
+
+
+*/
