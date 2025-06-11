@@ -217,7 +217,6 @@ func (w *Weak) RunIp(i interface{}) {
 		if w.Config.Rate > 0 {
 			rateLimit = w.Config.Rate
 		}
-		fmt.Println("rateLimit", rateLimit)
 		ticker := time.NewTicker(time.Second / time.Duration(rateLimit))
 		defer ticker.Stop()
 
