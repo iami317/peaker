@@ -29,6 +29,7 @@ type Config struct {
 	Ts           time.Duration //单个协议账号密码超时时间
 	Thread       int           //并发目标的数量
 	ThreadSingle int           //单个协议执行的并发数量
+	Rate         int           //每秒钟发包速率
 	Logger       *logx.Logger
 	CheckAlive   bool //检测ip是否存活
 	DebugMode    bool
@@ -211,14 +212,25 @@ func (w *Weak) RunIp(i interface{}) {
 	}
 
 	if len(input.UserDict) > 0 && len(input.PassDict) > 0 {
+		// 设置速率限制 - 每秒最多执行10次扫描
+		rateLimit := 10
+		if w.Config.Rate > 0 {
+			rateLimit = w.Config.Rate
+		}
+		ticker := time.NewTicker(time.Second / time.Duration(rateLimit))
+		defer ticker.Stop()
+
 		scanFuncPool := tunny.NewFunc(thread, s.ScanFunc)
 		defer scanFuncPool.Close()
 		sema := hubur.NewSizedWaitGroup(thread)
+
 		for _, user := range input.UserDict {
 			if len(rsOut.Crack) > 0 && input.Addr.Protocol == rsOut.Addr.Protocol {
 				break
 			}
 			for _, pass := range input.PassDict {
+				// 等待速率限制器允许执行
+				<-ticker.C
 				sema.Add()
 				paramScan := plugins.Single{
 					TimeOut:  timeout,
