@@ -2,6 +2,7 @@ package peaker
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"github.com/Jeffail/tunny"
 	"github.com/iami317/hubur"
@@ -34,6 +35,7 @@ type Config struct {
 	CheckAlive   bool //检测ip是否存活
 	DebugMode    bool
 	ResultFile   string
+	Context      context.Context
 }
 
 type RunIpData struct {
@@ -210,7 +212,11 @@ func (w *Weak) RunIp(i interface{}) {
 			return
 		}
 	}
-
+	ctx := w.Config.Context
+	//当用户没有
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	if len(input.UserDict) > 0 && len(input.PassDict) > 0 {
 		// 设置速率限制 - 每秒最多执行10次扫描
 		rateLimit := 10
@@ -223,61 +229,73 @@ func (w *Weak) RunIp(i interface{}) {
 		scanFuncPool := tunny.NewFunc(thread, s.ScanFunc)
 		defer scanFuncPool.Close()
 		sema := hubur.NewSizedWaitGroup(thread)
-
+	outerLoop:
 		for _, user := range input.UserDict {
-			if len(rsOut.Crack) > 0 && input.Addr.Protocol == rsOut.Addr.Protocol {
-				break
-			}
-			for _, pass := range input.PassDict {
-				// 等待速率限制器允许执行
-				<-ticker.C
-				sema.Add()
-				paramScan := plugins.Single{
-					TimeOut:  timeout,
-					Ip:       input.Addr.Ip,
-					Port:     input.Addr.Port,
-					Protocol: string(input.Addr.Protocol),
-					Username: user,
-					Password: pass,
-				}
+			select {
+			case <-ctx.Done():
+				w.Config.Logger.Warnf(fmt.Sprintf("收到context的cancel消息,退出循环"))
+				break outerLoop
+			default:
 				if len(rsOut.Crack) > 0 && input.Addr.Protocol == rsOut.Addr.Protocol {
-					sema.Done()
 					break
 				}
-				go func(param plugins.Single, rsOut *ResultOut, mode bool, l *logx.Logger) {
-					defer func() {
-						sema.Done()
-					}()
-					if w.Config.DebugMode {
-						l.Verbosef("START=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, param.Username, param.Password)
-					}
-					r, err := scanFuncPool.ProcessTimed(param, param.TimeOut)
-					if err != nil && mode {
-						l.Verbosef("TIMEOUT=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, param.Username, param.Password)
-						return
-					}
-					if r != nil {
-						rs := r.(plugins.ScanResult)
-						if rs.Result {
-							rsOut.Crack = append(rsOut.Crack, Crack{
-								User:   rs.Single.Username,
-								Pass:   rs.Single.Password,
-								Class:  uint(rs.Class),
-								Result: rs.Result,
-							})
-							l.Verbosef("SUCCESS=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", rs.Single.Ip, rs.Single.Port, rs.Single.Protocol, rs.Single.Username, rs.Single.Password)
+				for _, pass := range input.PassDict {
+					select {
+					case <-ctx.Done():
+						w.Config.Logger.Warnf(fmt.Sprintf("收到context的cancel消息,退出循环"))
+						break outerLoop
+					default:
+						// 等待速率限制器允许执行
+						<-ticker.C
+						sema.Add()
+						paramScan := plugins.Single{
+							TimeOut:  timeout,
+							Ip:       input.Addr.Ip,
+							Port:     input.Addr.Port,
+							Protocol: string(input.Addr.Protocol),
+							Username: user,
+							Password: pass,
 						}
+						if len(rsOut.Crack) > 0 && input.Addr.Protocol == rsOut.Addr.Protocol {
+							sema.Done()
+							break
+						}
+						go func(param plugins.Single, rsOut *ResultOut, mode bool, l *logx.Logger) {
+							defer func() {
+								sema.Done()
+							}()
+							if w.Config.DebugMode {
+								l.Verbosef("START=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, param.Username, param.Password)
+							}
+							r, err := scanFuncPool.ProcessTimed(param, param.TimeOut)
+							if err != nil && mode {
+								l.Verbosef("TIMEOUT=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, param.Username, param.Password)
+								return
+							}
+							if r != nil {
+								rs := r.(plugins.ScanResult)
+								if rs.Result {
+									rsOut.Crack = append(rsOut.Crack, Crack{
+										User:   rs.Single.Username,
+										Pass:   rs.Single.Password,
+										Class:  uint(rs.Class),
+										Result: rs.Result,
+									})
+									l.Verbosef("SUCCESS=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", rs.Single.Ip, rs.Single.Port, rs.Single.Protocol, rs.Single.Username, rs.Single.Password)
+								}
+							}
+							return
+						}(paramScan, rsOut, w.Config.DebugMode, w.Config.Logger)
 					}
-					return
-				}(paramScan, rsOut, w.Config.DebugMode, w.Config.Logger)
-			}
-			if protocol == plugins.REDIS {
-				break
+
+				}
+				if protocol == plugins.REDIS {
+					break
+				}
 			}
 		}
 		sema.Wait()
 	}
-
 	input.ResultChan <- rsOut
 	input.Done <- struct{}{}
 	return
