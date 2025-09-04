@@ -15,7 +15,7 @@ func UnauthorizedSnmp(i interface{}) interface{} {
 
 	err := gosnmp.Default.Connect()
 	if err == nil {
-		_, err = gosnmp.Default.Get([]string{".1.3.6.1.2.1.1.1.0"})
+		_, err = gosnmp.Default.Get([]string{"1.3.6.1.2.1.1.1.0"})
 		if err == nil {
 			result.Class = Unauthorized
 			result.Result = true
@@ -49,7 +49,7 @@ func ScanSNMP(i interface{}) interface{} {
 	err := params.Connect()
 	if err == nil {
 		defer params.Conn.Close()
-		_, err = params.Get([]string{".1.3.6.1.2.1.1.1.0"})
+		_, err = params.Get([]string{"1.3.6.1.2.1.1.1.0"})
 		if err == nil {
 			result.Class = WeakPass
 			result.Result = true
