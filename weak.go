@@ -248,6 +248,9 @@ func (w *Weak) RunIp(i interface{}) {
 						// 等待速率限制器允许执行
 						<-ticker.C
 						sema.Add()
+						if protocol == "SSH" {
+							time.Sleep(timeout + 5*time.Second)
+						}
 						paramScan := plugins.Single{
 							TimeOut:  timeout,
 							Ip:       input.Addr.Ip,
