@@ -12,12 +12,15 @@ func ScanLdap(i interface{}) interface{} {
 		Class:  WeakPass,
 		Result: false,
 	}
+	var conn *ldap.Conn
+	var err error
 	// LDAP连接配置
-	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", s.Ip, s.Port))
+	ldap.DefaultTimeout = s.TimeOut
+	conn, err = ldap.Dial("tcp", fmt.Sprintf("%s:%d", s.Ip, s.Port))
 	if err == nil {
-		defer l.Close()
+		defer conn.Close()
 		// LDAP绑定（登录）
-		err = l.Bind(s.Username, s.Password)
+		err = conn.Bind(s.Username, s.Password)
 		if err == nil {
 			result.Result = true
 		}
@@ -34,11 +37,12 @@ func UnauthorizedLdap(i interface{}) interface{} {
 		Result: false,
 	}
 	// LDAP连接配置
-	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", s.Ip, s.Port))
+	ldap.DefaultTimeout = s.TimeOut
+	conn, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", s.Ip, s.Port))
 	if err == nil {
-		defer l.Close()
-		// LDAP绑定（登录）
-		err = l.Bind(s.Username, s.Password)
+		defer conn.Close()
+		// LDAP绑定
+		err = conn.Bind(s.Username, s.Password)
 		if err == nil {
 			result.Result = true
 		}
