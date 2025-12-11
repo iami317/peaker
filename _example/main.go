@@ -17,7 +17,7 @@ func RunApp() {
 	app := cli.NewApp()
 	app.Usage = ""
 	app.Name = "Peaker"
-	app.Version = "1.0 beta"
+	app.Version = "v1.0.0-beta"
 	app.Description = ""
 	app.HelpName = "./peaker -h"
 	app.Flags = []cli.Flag{
