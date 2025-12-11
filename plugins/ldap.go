@@ -9,6 +9,8 @@ func ScanLdap(i interface{}) interface{} {
 	s := i.(Single)
 	result := ScanResult{
 		Single: s,
+		Class:  WeakPass,
+		Result: false,
 	}
 	// LDAP连接配置
 	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", s.Ip, s.Port))
@@ -17,7 +19,6 @@ func ScanLdap(i interface{}) interface{} {
 		// LDAP绑定（登录）
 		err = l.Bind(s.Username, s.Password)
 		if err == nil {
-			result.Class = WeakPass
 			result.Result = true
 		}
 	}
@@ -29,6 +30,8 @@ func UnauthorizedLdap(i interface{}) interface{} {
 	s := i.(Single)
 	result := ScanResult{
 		Single: s,
+		Class:  Unauthorized,
+		Result: false,
 	}
 	// LDAP连接配置
 	l, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", s.Ip, s.Port))
@@ -37,7 +40,6 @@ func UnauthorizedLdap(i interface{}) interface{} {
 		// LDAP绑定（登录）
 		err = l.Bind(s.Username, s.Password)
 		if err == nil {
-			result.Class = Unauthorized
 			result.Result = true
 		}
 	}

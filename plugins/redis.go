@@ -7,8 +7,11 @@ import (
 
 func UnauthorizedRedis(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	input1 := Single{
 		Ip:       s.Ip,
 		Port:     s.Port,
@@ -29,8 +32,9 @@ func UnauthorizedRedis(i interface{}) interface{} {
 
 func ScanRedis(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+	}
 	r2, c2 := execScanRedis(s)
 	if r2 {
 		result.Single.Username = ""

@@ -8,8 +8,12 @@ import (
 
 func ScanKibana(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
+
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
 	req.SetBasicAuth(s.Username, s.Password)
@@ -23,18 +27,19 @@ func ScanKibana(i interface{}) interface{} {
 	} else if res2.StatusCode() == 200 &&
 		strings.Contains(string(body2), "kibana") &&
 		strings.Contains(string(body2), "Management") {
-		result.Class = WeakPass
 		result.Result = true
 	}
 
 	return result
-
 }
 
 func UnauthorizedKibana(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
 
@@ -49,7 +54,6 @@ func UnauthorizedKibana(i interface{}) interface{} {
 	} else if res.StatusCode() == 200 &&
 		strings.Contains(string(body), "kibana") &&
 		strings.Contains(string(body), "Management") {
-		result.Class = Unauthorized
 		result.Result = true
 		return result
 	}

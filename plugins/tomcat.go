@@ -8,8 +8,11 @@ import (
 
 func ScanTomcat(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
 	req.SetBasicAuth(s.Username, s.Password)
@@ -19,19 +22,11 @@ func ScanTomcat(i interface{}) interface{} {
 	})
 	res, err := req.Get(fmt.Sprintf("http://%v:%v/manager/html", s.Ip, s.Port))
 	if err == nil && res != nil && res.StatusCode() == 200 {
-		defer func() {
-			err := res.Close()
-			if err != nil {
-				fmt.Println(err)
-			}
-		}()
+		defer res.Close()
 		body, err := res.Body()
 		if err == nil && strings.Contains(string(body), "Tomcat Web Application Manager") {
-			return ScanResult{
-				Single: s,
-				Result: true,
-				Class:  WeakPass,
-			}
+			result.Result = true
+			return result
 		}
 	}
 	return result
@@ -39,8 +34,11 @@ func ScanTomcat(i interface{}) interface{} {
 
 func UnauthorizedTomcat(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
 	req.SetHeaders(map[string]string{
@@ -51,15 +49,10 @@ func UnauthorizedTomcat(i interface{}) interface{} {
 	if err == nil && res != nil && res.StatusCode() == 200 {
 		body, err := res.Body()
 		if err == nil && strings.Contains(string(body), "Tomcat Web Application Manager") {
-			return ScanResult{
-				Single: s,
-				Result: true,
-				Class:  Unauthorized,
-			}
+			result.Result = true
+			return result
 		}
 	}
-	if res != nil {
-		res.Close()
-	}
+	defer res.Close()
 	return result
 }

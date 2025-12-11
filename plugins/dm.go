@@ -9,15 +9,17 @@ import (
 
 func ScanDm(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
 	db, err := sql.Open("dm", fmt.Sprintf("dm://%v:%v@%v:%v", s.Username, s.Password, s.Ip, s.Port))
 
 	if err == nil {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Class = WeakPass
 			result.Result = true
 		}
 	}
@@ -26,14 +28,17 @@ func ScanDm(i interface{}) interface{} {
 
 func UnauthorizedDm(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	result.Single = s
 	db, err := sql.Open("dm", fmt.Sprintf("dm://%v:%v@%v:%v", "root", "", s.Ip, s.Port))
 	if err == nil {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Class = Unauthorized
 			result.Result = true
 		}
 	}

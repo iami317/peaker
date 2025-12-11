@@ -1,7 +1,7 @@
 package plugins
 
 import (
-	gotelnet "github.com/iami317/peaker/util/go-telnet"
+	gotelnet "github.com/iami317/peaker/pkg/go-telnet"
 	"strconv"
 	"time"
 )
@@ -13,8 +13,12 @@ const (
 
 func UnauthorizedTelnet(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
+
 	client := gotelnet.TelNet{
 		IP:               s.Ip,
 		Port:             strconv.Itoa(int(s.Port)),
@@ -26,14 +30,17 @@ func UnauthorizedTelnet(i interface{}) interface{} {
 	bl := client.Login()
 	if bl {
 		result.Result = true
-		result.Class = Unauthorized
 	}
 	return result
 }
 
 func ScanTelnet(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
 	result.Single = s
 	client := gotelnet.TelNet{
 		IP:               s.Ip,
@@ -46,7 +53,6 @@ func ScanTelnet(i interface{}) interface{} {
 	bl := client.Login()
 	if bl {
 		result.Result = true
-		result.Class = WeakPass
 	}
 	return result
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -19,7 +18,7 @@ func main() {
 func RunApp() {
 	app := cli.NewApp()
 	app.Usage = ""
-	app.Name = "peaker"
+	app.Name = "Peaker"
 	app.Version = "1.0 beta"
 	app.Description = ""
 	app.HelpName = "./peaker -h"
@@ -88,7 +87,7 @@ func RunApp() {
 func RunServer(ctx *cli.Context) error {
 	if ctx.Bool("protocol") {
 		for protocol, _ := range plugins.ScanMap {
-			pp.Print(strings.ToLower(string(protocol)))
+			pp.Println(string(protocol))
 		}
 		return nil
 	}

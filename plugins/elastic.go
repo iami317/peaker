@@ -10,8 +10,12 @@ import (
 
 func UnauthorizedElastic(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
+
 	client, err := elastic.NewClient(
 		elastic.SetURL(fmt.Sprintf("https://%v:%v", s.Ip, s.Port), fmt.Sprintf("http://%v:%v", s.Ip, s.Port)),
 		elastic.SetMaxRetries(3),
@@ -25,7 +29,6 @@ func UnauthorizedElastic(i interface{}) interface{} {
 	if err == nil {
 		_, _, err = client.Ping(fmt.Sprintf("https://%v:%v", s.Ip, s.Port)).Do(context.Background())
 		if err == nil {
-			result.Class = WeakPass
 			result.Result = true
 		}
 	}
@@ -34,8 +37,12 @@ func UnauthorizedElastic(i interface{}) interface{} {
 
 func ScanElastic(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
+
 	client, err := elastic.NewClient(
 		elastic.SetURL(fmt.Sprintf("https://%v:%v", s.Ip, s.Port), fmt.Sprintf("http://%v:%v", s.Ip, s.Port)),
 		elastic.SetMaxRetries(3),
@@ -50,7 +57,6 @@ func ScanElastic(i interface{}) interface{} {
 	if err == nil {
 		_, _, err = client.Ping(fmt.Sprintf("https://%v:%v", s.Ip, s.Port)).Do(context.Background())
 		if err == nil {
-			result.Class = WeakPass
 			result.Result = true
 		}
 	}

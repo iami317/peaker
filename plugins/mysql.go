@@ -9,8 +9,12 @@ import (
 
 func ScanMysql(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
+
 	dataSourceName := fmt.Sprintf(
 		"%v:%v@tcp(%v:%v)/%v?charset=utf8",
 		s.Username,
@@ -23,7 +27,6 @@ func ScanMysql(i interface{}) interface{} {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Class = WeakPass
 			result.Result = true
 		}
 	}
@@ -32,7 +35,11 @@ func ScanMysql(i interface{}) interface{} {
 
 func UnauthorizedMysql(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	result.Single = s
 	dataSourceName := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8", "root", "", s.Ip, s.Port, "mysql")
 	db, err := sql.Open("mysql", dataSourceName)
@@ -41,7 +48,6 @@ func UnauthorizedMysql(i interface{}) interface{} {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Class = Unauthorized
 			result.Result = true
 		}
 	}

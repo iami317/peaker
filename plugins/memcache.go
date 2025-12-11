@@ -3,14 +3,24 @@ package plugins
 import (
 	"bufio"
 	"fmt"
+	"github.com/bradfitz/gomemcache/memcache"
 	"net"
 	"strings"
 )
 
 func ScanMemcache(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
+	memcacheClient := memcache.New(fmt.Sprintf("%s:%s", s.Ip, s.Port))
+	err := memcacheClient.Ping()
+	if err == nil {
+		defer memcacheClient.Close()
+		result.Result = true
+	}
 	return result
 }
 

@@ -13,8 +13,12 @@ Debian: yum install -y krb5-devel
 */
 func ScanHive(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
+
 	configuration := gohive.NewConnectConfiguration()
 	configuration.Username = s.Username
 	configuration.Password = s.Password
@@ -26,7 +30,6 @@ func ScanHive(i interface{}) interface{} {
 	conn, err := gohive.Connect(s.Ip, int(s.Port), "NONE", configuration)
 	if err == nil && conn != nil {
 		defer conn.Close()
-		result.Class = WeakPass
 		result.Result = true
 	}
 	return result
@@ -34,8 +37,12 @@ func ScanHive(i interface{}) interface{} {
 
 func UnauthorizedHive(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
+
 	configuration := gohive.NewConnectConfiguration()
 	configuration.ConnectTimeout = s.TimeOut
 	configuration.HttpTimeout = s.TimeOut
@@ -45,7 +52,6 @@ func UnauthorizedHive(i interface{}) interface{} {
 	conn, err := gohive.Connect(s.Ip, int(s.Port), "NONE", configuration)
 	if err == nil && conn != nil {
 		defer conn.Close()
-		result.Class = Unauthorized
 		result.Result = true
 	}
 	return result

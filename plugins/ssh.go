@@ -14,8 +14,11 @@ var client *ssh.Client
 func ScanSsh(i interface{}) interface{} {
 	var err error
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
 	config := &ssh.ClientConfig{
 		User: s.Username,
 		Auth: []ssh.AuthMethod{
@@ -23,10 +26,10 @@ func ScanSsh(i interface{}) interface{} {
 		},
 		Timeout:         s.TimeOut,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		ClientVersion:   "SSH-2.0-OpenSSH_9.9",
-		Config: ssh.Config{
-			Ciphers: []string{"aes128-ctr", "aes192-ctr", "aes256-ctr"}, // 显式指定常用算法
-		},
+		//ClientVersion:   "SSH-2.0-OpenSSH_9.9",
+		//Config: ssh.Config{
+		//	Ciphers: []string{"aes128-ctr", "aes192-ctr", "aes256-ctr"}, // 显式指定常用算法
+		//},
 	}
 
 	_ = hubur.Retry(
@@ -34,8 +37,8 @@ func ScanSsh(i interface{}) interface{} {
 			//fmt.Println(fmt.Sprintf("**********%v:%v %v %v", s.Ip, s.Port, s.Username, s.Password))
 			client, err = ssh.Dial("tcp", fmt.Sprintf("%v:%v", s.Ip, s.Port), config)
 			if err != nil {
-				//fmt.Println(fmt.Sprintf("=====%v:%v %v %v %v %v %v", s.Ip, s.Port, s.Username, s.Password, s.TimeOut, result.Result, err.Error()))
-				if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "handshake failed: EOF") {
+				if strings.Contains(err.Error(), "connection reset by peer") ||
+					strings.Contains(err.Error(), "handshake failed: EOF") {
 					return err
 				}
 				return nil
@@ -46,7 +49,8 @@ func ScanSsh(i interface{}) interface{} {
 
 			if err != nil {
 				//fmt.Println(fmt.Sprintf("-----%v:%v %v %v %v %v", s.Ip, s.Port, s.Username, s.Password, result.Result, err.Error()))
-				if strings.Contains(err.Error(), "connection reset by peer") || strings.Contains(err.Error(), "handshake failed: EOF") {
+				if strings.Contains(err.Error(), "connection reset by peer") ||
+					strings.Contains(err.Error(), "handshake failed: EOF") {
 					return err
 				}
 				return nil
@@ -66,22 +70,26 @@ func ScanSsh(i interface{}) interface{} {
 
 func UnauthorizedSsh(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
+
 	config := &ssh.ClientConfig{
 		User:    s.Username,
 		Timeout: s.TimeOut,
 		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
 			return nil
 		},
+		Auth: []ssh.AuthMethod{ssh.Password("")},
 	}
-	client, err := ssh.Dial("tcp", fmt.Sprintf("%v:%v", s.Ip, s.Port), config)
+	sshClient, err := ssh.Dial("tcp", fmt.Sprintf("%v:%v", s.Ip, s.Port), config)
 	if err == nil {
 		defer client.Close()
-		session, err := client.NewSession()
+		session, err := sshClient.NewSession()
 		if err == nil {
 			defer session.Close()
-			result.Class = Unauthorized
 			result.Result = true
 		}
 	}

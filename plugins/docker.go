@@ -8,8 +8,11 @@ import (
 
 func UnauthorizedDocker(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
 	res, err := req.Get(fmt.Sprintf("http://%v:%v/version", s.Ip, s.Port))
@@ -18,11 +21,7 @@ func UnauthorizedDocker(i interface{}) interface{} {
 		body, err := res.Body()
 		if err == nil &&
 			res.StatusCode() == 200 && strings.Contains(string(body), "Platform") {
-			return ScanResult{
-				Single: s,
-				Class:  Unauthorized,
-				Result: true,
-			}
+			result.Result = true
 		}
 	}
 	return result
@@ -30,8 +29,12 @@ func UnauthorizedDocker(i interface{}) interface{} {
 
 func ScanDocker(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
+
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
 	req.SetBasicAuth(s.Username, s.Password)
@@ -40,11 +43,7 @@ func ScanDocker(i interface{}) interface{} {
 		defer res.Close()
 		body, err := res.Body()
 		if err == nil && strings.Contains(string(body), "Platform") {
-			return ScanResult{
-				Single: s,
-				Class:  WeakPass,
-				Result: true,
-			}
+			result.Result = true
 		}
 	}
 

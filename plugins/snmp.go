@@ -2,25 +2,29 @@ package plugins
 
 import (
 	"github.com/gosnmp/gosnmp"
-	"time"
+	"github.com/spf13/cast"
 )
 
 func UnauthorizedSnmp(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	gosnmp.Default.Target = s.Ip
-	gosnmp.Default.Port = uint16(s.Port)
-	gosnmp.Default.Community = result.Single.Password
-	gosnmp.Default.Timeout = s.TimeOut
-
-	err := gosnmp.Default.Connect()
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
+	conn := &gosnmp.GoSNMP{
+		Target:             s.Ip,
+		Port:               cast.ToUint16(s.Port),
+		Community:          "",
+		Version:            gosnmp.Version2c,
+		Timeout:            s.TimeOut,
+		MaxOids:            gosnmp.MaxOids,
+		Retries:            3,
+		ExponentialTimeout: true,
+	}
+	err := conn.Connect()
 	if err == nil {
-		_, err = gosnmp.Default.Get([]string{"1.3.6.1.2.1.1.1.0"})
-		if err == nil {
-			result.Class = Unauthorized
-			result.Result = true
-			return result
-		}
+		result.Result = true
 	}
 	return result
 }
@@ -30,33 +34,25 @@ oids列表参照：https://blog.csdn.net/qq_29752857/article/details/120223993
 */
 func ScanSNMP(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	params := &gosnmp.GoSNMP{
-		Target:        s.Ip,
-		Port:          uint16(s.Port),
-		Version:       gosnmp.Version3,
-		SecurityModel: gosnmp.UserSecurityModel,
-		MsgFlags:      gosnmp.AuthNoPriv,
-		Timeout:       time.Duration(2) * time.Second,
-		SecurityParameters: &gosnmp.UsmSecurityParameters{
-			UserName:                 s.Username,
-			AuthenticationProtocol:   gosnmp.MD5,
-			AuthenticationPassphrase: s.Password,
-			PrivacyProtocol:          gosnmp.AES,
-			PrivacyPassphrase:        s.Password,
-		},
-	}
-	err := params.Connect()
-	if err == nil {
-		defer params.Conn.Close()
-		_, err = params.Get([]string{"1.3.6.1.2.1.1.1.0"})
-		if err == nil {
-			result.Class = WeakPass
-			result.Result = true
-			result.Single.Username = s.Username
-			result.Single.Password = s.Password
-		}
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
 	}
 
+	conn := &gosnmp.GoSNMP{
+		Target:             s.Ip,
+		Port:               cast.ToUint16(s.Port),
+		Community:          s.Password,
+		Version:            gosnmp.Version2c,
+		Timeout:            s.TimeOut,
+		MaxOids:            gosnmp.MaxOids,
+		Retries:            3,
+		ExponentialTimeout: true,
+	}
+	err := conn.Connect()
+	if err == nil {
+		result.Result = true
+	}
 	return result
 }

@@ -9,6 +9,8 @@ func UnauthorizedFtp(i interface{}) interface{} {
 	s := i.(Single)
 	result := ScanResult{
 		Single: s,
+		Class:  Unauthorized,
+		Result: false,
 	}
 	input1 := Single{Ip: s.Ip, Port: s.Port, Protocol: s.Protocol, Username: "anonymous", Password: "", TimeOut: s.TimeOut}
 	r1, c1 := execScanFtp(input1)

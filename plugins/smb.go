@@ -11,6 +11,8 @@ func UnauthorizedSmb(i interface{}) interface{} {
 	s := i.(Single)
 	result := ScanResult{
 		Single: s,
+		Class:  Unauthorized,
+		Result: false,
 	}
 	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", s.Ip, s.Port), s.TimeOut)
 	if err == nil {
@@ -25,7 +27,6 @@ func UnauthorizedSmb(i interface{}) interface{} {
 		smb, err := d.Dial(conn)
 		if err == nil {
 			defer smb.Logoff()
-			result.Class = Unauthorized
 			result.Result = true
 		}
 	}
@@ -36,6 +37,8 @@ func ScanSmb(i interface{}) interface{} {
 	s := i.(Single)
 	result := ScanResult{
 		Single: s,
+		Class:  WeakPass,
+		Result: false,
 	}
 	conn, err := net.Dial("tcp", fmt.Sprintf("%v:%v", s.Ip, s.Port))
 	if err == nil {
@@ -56,8 +59,6 @@ func ScanSmb(i interface{}) interface{} {
 					logx.Verbosef("show list:%v", name)
 				}
 			}
-
-			result.Class = WeakPass
 			result.Result = true
 		}
 	}

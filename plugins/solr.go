@@ -8,8 +8,12 @@ import (
 
 func ScanSolr(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
+
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
 	req.SetBasicAuth("solr", "SolrRocks")
@@ -19,7 +23,6 @@ func ScanSolr(i interface{}) interface{} {
 		if err == nil &&
 			strings.Contains(string(body), "instanceDir") &&
 			strings.Contains(string(body), "dataDir") {
-			result.Class = WeakPass
 			result.Result = true
 		}
 	}
@@ -28,8 +31,11 @@ func ScanSolr(i interface{}) interface{} {
 
 func UnauthorizedSolr(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
 	res, err := req.Get(fmt.Sprintf("http://%v:%v/solr/admin/cores?wt=json&indexInfo=false", s.Ip, s.Port))
@@ -38,7 +44,6 @@ func UnauthorizedSolr(i interface{}) interface{} {
 		if err == nil &&
 			strings.Contains(string(body), "instanceDir") &&
 			strings.Contains(string(body), "dataDir") {
-			result.Class = Unauthorized
 			result.Result = true
 		}
 	}

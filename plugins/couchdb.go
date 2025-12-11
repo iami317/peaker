@@ -9,7 +9,11 @@ import (
 
 func UnauthorizedCouchdb(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	result.Single = s
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(time.Duration(3))
@@ -18,11 +22,7 @@ func UnauthorizedCouchdb(i interface{}) interface{} {
 		defer res.Close()
 		body, err := res.Body()
 		if err == nil && strings.Contains(string(body), `"ok":true,"userCtx":{"name":"couchdb","roles":["`) {
-			return ScanResult{
-				Single: s,
-				Class:  Unauthorized,
-				Result: true,
-			}
+			result.Result = true
 		}
 	}
 
@@ -31,8 +31,11 @@ func UnauthorizedCouchdb(i interface{}) interface{} {
 
 func ScanCouchdb(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(time.Duration(3))
 	req.SetBasicAuth(s.Username, s.Password)

@@ -8,8 +8,11 @@ import (
 
 func ScanPostgres(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
 	dataSourceName := fmt.Sprintf(
 		"postgres://%v:%v@%v:%v/%v?sslmode=%v",
 		s.Username,
@@ -21,7 +24,6 @@ func ScanPostgres(i interface{}) interface{} {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Class = WeakPass
 			result.Result = true
 		}
 	}
@@ -30,7 +32,11 @@ func ScanPostgres(i interface{}) interface{} {
 
 func UnauthorizedPostgres(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	result.Single = s
 	dataSourceName := fmt.Sprintf(
 		"postgres://%v:%v@%v:%v/%v?sslmode=%v",
@@ -43,7 +49,6 @@ func UnauthorizedPostgres(i interface{}) interface{} {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Class = Unauthorized
 			result.Result = true
 		}
 	}

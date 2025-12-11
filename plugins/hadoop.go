@@ -7,7 +7,11 @@ import (
 
 func UnauthorizedHadoop(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
 	result.Single = s
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
@@ -18,7 +22,6 @@ func UnauthorizedHadoop(i interface{}) interface{} {
 		if err == nil &&
 			strings.Contains(string(body), "Applications") &&
 			strings.Contains(string(body), "hadoop") {
-			result.Class = Unauthorized
 			result.Result = true
 		}
 	}
@@ -27,8 +30,11 @@ func UnauthorizedHadoop(i interface{}) interface{} {
 
 func ScanHadoop(i interface{}) interface{} {
 	s := i.(Single)
-	result := ScanResult{}
-	result.Single = s
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
 	req := HttpRequest.NewRequest()
 	req.SetTimeout(s.TimeOut)
 	req.SetBasicAuth(s.Username, s.Password)
@@ -36,10 +42,7 @@ func ScanHadoop(i interface{}) interface{} {
 	if err == nil {
 		body, err := res.Body()
 		defer res.Close()
-		if err == nil &&
-			strings.Contains(string(body), "Applications") &&
-			strings.Contains(string(body), "hadoop") {
-			result.Class = Unauthorized
+		if err == nil && strings.Contains(string(body), "Applications") && strings.Contains(string(body), "hadoop") {
 			result.Result = true
 		}
 	}

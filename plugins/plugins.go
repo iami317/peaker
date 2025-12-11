@@ -45,35 +45,47 @@ var (
 )
 
 const (
-	SshThread              = 3 //ssh并发数
-	DefaultThread          = 200
-	DefaultTs              = time.Second * 3
-	Unauthorized  Class    = 1
-	WeakPass      Class    = 2
-	UnKnow        Class    = 3
-	COUCHDB       Protocol = "COUCHDB"
-	DOCKER        Protocol = "DOCKER"
-	ELASTIC       Protocol = "ELASTIC"
-	FTP           Protocol = "FTP"
-	HADOOP        Protocol = "HADOOP"
-	HIVE          Protocol = "HIVE"
-	KIBANA        Protocol = "KIBANA"
-	LDAP          Protocol = "LDAP"
-	MEMCACHE      Protocol = "MEMCACHE"
-	MONGODB       Protocol = "MONGODB"
-	MSSQL         Protocol = "MSSQL"
-	MYSQL         Protocol = "MYSQL"
-	ORACLE        Protocol = "ORACLE"
-	POSTGRESQL    Protocol = "POSTGRESQL"
-	RDP           Protocol = "RDP"
-	REDIS         Protocol = "REDIS"
-	SMB           Protocol = "SMB"
-	SNMP          Protocol = "SNMP"
-	SOLR          Protocol = "SOLR"
-	SSH           Protocol = "SSH"
-	TELNET        Protocol = "TELNET"
-	TOMCAT        Protocol = "TOMCAT"
-	DM            Protocol = "DM"
+	SshThread           = 3 //ssh并发数
+	DefaultThread       = 200
+	DefaultTs           = time.Second * 3
+	Unauthorized  Class = 1
+	WeakPass      Class = 2
+	UnKnow        Class = 3
+)
+
+const (
+	COUCHDB    Protocol = "couchdb"
+	DOCKER     Protocol = "docker"
+	ELASTIC    Protocol = "elastic"
+	FTP        Protocol = "ftp"
+	HADOOP     Protocol = "hadoop"
+	HIVE       Protocol = "hive"
+	KIBANA     Protocol = "kibana"
+	LDAP       Protocol = "ldap"
+	MEMCACHE   Protocol = "memcache"
+	MONGODB    Protocol = "mongodb"
+	MSSQL      Protocol = "mssql"
+	MYSQL      Protocol = "mysql"
+	ORACLE     Protocol = "oracle"
+	POSTGRESQL Protocol = "postgresql"
+	RDP        Protocol = "rdp"
+	REDIS      Protocol = "redis"
+	SMB        Protocol = "smb"
+	SNMP       Protocol = "snmp"
+	SOLR       Protocol = "solr"
+	SSH        Protocol = "ssh"
+	TELNET     Protocol = "telnet"
+	TOMCAT     Protocol = "tomcat"
+	DM         Protocol = "dm"
+	VNC        Protocol = "vnc"
+	AMQP       Protocol = "amqp"
+	MQTT       Protocol = "mqtt"
+	HTTP       Protocol = "http"
+	POP3       Protocol = "pop3"
+	SOCKS5     Protocol = "socks5"
+	RSYNC      Protocol = "rsync"
+	ZOOKEEPER  Protocol = "zookeeper"
+	NEUTRON    Protocol = "neutron"
 )
 
 /**初始化构建各个执行协议的调用池供引擎调用*/
@@ -88,7 +100,7 @@ func init() {
 		KIBANA:     {Thread: DefaultThread, ScanFunc: ScanKibana, UnauthorizedFunc: UnauthorizedKibana},
 		LDAP:       {Thread: DefaultThread, ScanFunc: ScanLdap, UnauthorizedFunc: UnauthorizedLdap},
 		MEMCACHE:   {Thread: DefaultThread, ScanFunc: ScanMemcache, UnauthorizedFunc: UnauthorizedMemcache},
-		MONGODB:    {Thread: DefaultThread, ScanFunc: ScanMongodb, UnauthorizedFunc: UnauthorizedMongdb},
+		MONGODB:    {Thread: DefaultThread, ScanFunc: ScanMongodb, UnauthorizedFunc: UnauthorizedMongodb},
 		MYSQL:      {Thread: DefaultThread, ScanFunc: ScanMysql, UnauthorizedFunc: UnauthorizedMysql},
 		POSTGRESQL: {Thread: DefaultThread, ScanFunc: ScanPostgres, UnauthorizedFunc: UnauthorizedPostgres},
 		RDP:        {Thread: DefaultThread, ScanFunc: ScanRdp, UnauthorizedFunc: UnauthorizedRdp},
@@ -100,8 +112,16 @@ func init() {
 		TELNET:     {Thread: DefaultThread, ScanFunc: ScanTelnet, UnauthorizedFunc: UnauthorizedTelnet},
 		TOMCAT:     {Thread: DefaultThread, ScanFunc: ScanTomcat, UnauthorizedFunc: UnauthorizedTomcat},
 		DM:         {Thread: DefaultThread, ScanFunc: ScanDm, UnauthorizedFunc: UnauthorizedDm},
-		//MSSQL:      {Thread: DefaultThread, ScanFunc: ScanMssql, UnauthorizedFunc: UnauthorizedMssql},
-		//ORACLE:     {Thread: DefaultThread, Func: ScanOracle},
-		//VNC:        {Thread: DefaultThread, ScanFunc: ScanVnc, UnauthorizedFunc: UnauthorizedVnc},
+		MSSQL:      {Thread: DefaultThread, ScanFunc: ScanMssql, UnauthorizedFunc: UnauthorizedMssql},
+		ORACLE:     {Thread: DefaultThread},
+		VNC:        {Thread: DefaultThread, ScanFunc: ScanVnc, UnauthorizedFunc: UnauthorizedVnc},
+		AMQP:       {Thread: DefaultThread, ScanFunc: ScanAmqp, UnauthorizedFunc: UnauthorizedAmqp},
+		MQTT:       {Thread: DefaultThread, ScanFunc: ScanMqtt, UnauthorizedFunc: UnauthorizedMqtt},
+		POP3:       {Thread: DefaultThread, ScanFunc: ScanPop3, UnauthorizedFunc: UnauthorizedPop3},
+		SOCKS5:     {Thread: DefaultThread, ScanFunc: ScanSocks5, UnauthorizedFunc: UnauthorizedSocks5},
+		RSYNC:      {Thread: DefaultThread, ScanFunc: ScanVnc, UnauthorizedFunc: UnauthorizedVnc},
+		ZOOKEEPER:  {Thread: DefaultThread, ScanFunc: ScanZookeeper, UnauthorizedFunc: UnauthorizedZookeeper},
+		NEUTRON:    {Thread: DefaultThread, ScanFunc: ScanVnc, UnauthorizedFunc: UnauthorizedVnc},
+		HTTP:       {Thread: DefaultThread, ScanFunc: ScanVnc, UnauthorizedFunc: UnauthorizedVnc},
 	}
 }
