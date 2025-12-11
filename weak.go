@@ -264,11 +264,11 @@ func (w *Weak) RunIp(i interface{}) {
 								sema.Done()
 							}()
 							if w.Config.DebugMode {
-								l.Verbosef("START=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, param.Username, param.Password)
+								l.Verbosef("start => ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, param.Username, param.Password)
 							}
 							r, err := scanFuncPool.ProcessTimed(param, param.TimeOut)
 							if err != nil && mode {
-								l.Verbosef("TIMEOUT=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, param.Username, param.Password)
+								l.Verbosef("timeout => ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, param.Username, param.Password)
 								return
 							}
 							if r != nil {
