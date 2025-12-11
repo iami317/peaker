@@ -134,7 +134,7 @@ func (w *Weak) RunIp(i interface{}) {
 		}
 	}()
 	input := i.(RunIpData)
-	protocol := plugins.Protocol(strings.ToUpper(input.Addr.Protocol))
+	protocol := plugins.Protocol(strings.ToLower(input.Addr.Protocol))
 	s, ok := plugins.ScanMap[protocol]
 	if !ok {
 		w.Config.Logger.Errorf("The current protocol %v is not supported", input.Addr.Protocol)
