@@ -3,8 +3,17 @@ package plugins
 import (
 	"fmt"
 	"github.com/iami317/peaker/pkg/grdp"
-	"github.com/iami317/peaker/pkg/grdp/glog"
+	"strings"
 )
+
+func SplitUserDomain(user string) (string, string) {
+	var domain string
+	if strings.Contains(user, "/") {
+		user = strings.Split(user, "/")[1]
+		domain = strings.Split(user, "/")[0]
+	}
+	return user, domain
+}
 
 func ScanRdp(i interface{}) interface{} {
 	s := i.(Single)
@@ -13,14 +22,11 @@ func ScanRdp(i interface{}) interface{} {
 		Class:  WeakPass,
 		Result: false,
 	}
-	g := grdp.NewClient(fmt.Sprintf("%s:%d", s.Ip, s.Port), glog.NONE)
-	var err error
-	//RDP协议登录测试
-	err = g.LoginForSSL("", s.Username, s.Password)
+	user, domain := SplitUserDomain(s.Username)
+	err := grdp.Login(fmt.Sprintf("%v:%v", s.Ip, s.Port), domain, user, s.Password)
 	if err == nil {
 		result.Result = true
 	}
-
 	return result
 }
 
@@ -30,13 +36,6 @@ func UnauthorizedRdp(i interface{}) interface{} {
 		Single: s,
 		Class:  Unauthorized,
 		Result: false,
-	}
-	g := grdp.NewClient(fmt.Sprintf("%s:%d", s.Ip, s.Port), glog.NONE)
-	var err error
-	//SSL协议登录测试
-	err = g.LoginForSSL("", "", "")
-	if err == nil {
-		result.Result = true
 	}
 
 	return result

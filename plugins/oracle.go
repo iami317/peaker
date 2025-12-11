@@ -1,35 +1,43 @@
 package plugins
 
-//
-//import (
-//	_ "gopkg.in/rana/ora.v4"
-//
-//	"database/sql"
-//	"fmt"
-//)
-//
-//func ScanOracle(i interface{}) interface{} {
-//	s := i.(Single)
-//	result := ScanResult{
-//		Single: s,
-//	}
-//	result.Single = s
-//	dataSourceName := fmt.Sprintf(
-//		"%v:%v@tcp(%v:%v)/%v",
-//		s.Username,
-//		s.Password,
-//		s.Ip,
-//		s.Port, "orcl")
-//
-//	db, err := sql.Open("ora", dataSourceName)
-//	defer db.Close()
-//	if err == nil {
-//		err = db.Ping()
-//		if err == nil {
-//			result.Class = WeakPass
-//			result.Result = true
-//		}
-//	}
-//
-//	return result
-//}
+import (
+	"database/sql"
+	"fmt"
+	_ "github.com/sijms/go-ora/v2"
+)
+
+func UnauthorizedOracle(i interface{}) interface{} {
+	s := i.(Single)
+	result := ScanResult{
+		Single: s,
+		Class:  Unauthorized,
+		Result: false,
+	}
+	return result
+}
+
+func ScanOracle(i interface{}) interface{} {
+	s := i.(Single)
+	result := ScanResult{
+		Single: s,
+		Class:  WeakPass,
+		Result: false,
+	}
+
+	connStr := fmt.Sprintf(
+		"oracle://%s:%s@%s:%s/%s?connection_timeout=%d&connection_pool_timeout=%d",
+		s.Username,
+		s.Password,
+		s.Ip,
+		s.Port,
+		"orcl",
+		s.TimeOut,
+		s.TimeOut)
+
+	conn, err := sql.Open("oracle", connStr)
+	if err != nil {
+		defer conn.Close()
+		result.Result = true
+	}
+	return result
+}

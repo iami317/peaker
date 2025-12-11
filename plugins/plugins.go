@@ -13,7 +13,7 @@ var ClassMap = map[Class]string{
 	UnKnow:       "未知",
 }
 
-/**单个执行任务结构**/
+// Single 单个执行任务结构
 type Single struct {
 	Ip       string
 	Port     uint
@@ -113,15 +113,15 @@ func init() {
 		TOMCAT:     {Thread: DefaultThread, ScanFunc: ScanTomcat, UnauthorizedFunc: UnauthorizedTomcat},
 		DM:         {Thread: DefaultThread, ScanFunc: ScanDm, UnauthorizedFunc: UnauthorizedDm},
 		MSSQL:      {Thread: DefaultThread, ScanFunc: ScanMssql, UnauthorizedFunc: UnauthorizedMssql},
-		ORACLE:     {Thread: DefaultThread},
+		ORACLE:     {Thread: DefaultThread, ScanFunc: ScanOracle, UnauthorizedFunc: UnauthorizedOracle},
 		VNC:        {Thread: DefaultThread, ScanFunc: ScanVnc, UnauthorizedFunc: UnauthorizedVnc},
 		AMQP:       {Thread: DefaultThread, ScanFunc: ScanAmqp, UnauthorizedFunc: UnauthorizedAmqp},
 		MQTT:       {Thread: DefaultThread, ScanFunc: ScanMqtt, UnauthorizedFunc: UnauthorizedMqtt},
 		POP3:       {Thread: DefaultThread, ScanFunc: ScanPop3, UnauthorizedFunc: UnauthorizedPop3},
 		SOCKS5:     {Thread: DefaultThread, ScanFunc: ScanSocks5, UnauthorizedFunc: UnauthorizedSocks5},
-		RSYNC:      {Thread: DefaultThread, ScanFunc: ScanVnc, UnauthorizedFunc: UnauthorizedVnc},
+		RSYNC:      {Thread: DefaultThread, ScanFunc: ScanRsync, UnauthorizedFunc: UnauthorizedRsync},
 		ZOOKEEPER:  {Thread: DefaultThread, ScanFunc: ScanZookeeper, UnauthorizedFunc: UnauthorizedZookeeper},
-		NEUTRON:    {Thread: DefaultThread, ScanFunc: ScanVnc, UnauthorizedFunc: UnauthorizedVnc},
-		HTTP:       {Thread: DefaultThread, ScanFunc: ScanVnc, UnauthorizedFunc: UnauthorizedVnc},
+		NEUTRON:    {Thread: DefaultThread, ScanFunc: ScanNeutron, UnauthorizedFunc: UnauthorizedNeutron},
+		//HTTP:       {Thread: DefaultThread, ScanFunc: ScanHttp, UnauthorizedFunc: UnauthorizedHttp},
 	}
 }
