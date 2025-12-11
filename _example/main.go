@@ -4,9 +4,7 @@ import (
 	"github.com/iami317/logx"
 	"github.com/iami317/peaker"
 	"github.com/iami317/peaker/plugins"
-	"github.com/k0kubun/pp/v3"
 	"github.com/urfave/cli/v2"
-	"log"
 	"os"
 	"time"
 )
@@ -40,6 +38,7 @@ func RunApp() {
 		},
 		&cli.BoolFlag{
 			Name:  "verbose",
+			Value: true,
 			Usage: "Set log level to debug",
 		},
 		&cli.BoolFlag{
@@ -79,7 +78,7 @@ func RunApp() {
 	app.Action = RunServer
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatalf("engin err: %v", err)
+		logx.Fatalf("engin err: %v", err)
 		return
 	}
 }
@@ -87,7 +86,7 @@ func RunApp() {
 func RunServer(ctx *cli.Context) error {
 	if ctx.Bool("protocol") {
 		for protocol, _ := range plugins.ScanMap {
-			pp.Println(string(protocol))
+			logx.Silent(string(protocol))
 		}
 		return nil
 	}
@@ -131,7 +130,7 @@ func RunServer(ctx *cli.Context) error {
 		r := v.(*peaker.ResultOut)
 		if len(r.Crack) > 0 {
 			for _, crack := range r.Crack {
-				pp.Println(r.Addr.String(), crack.String())
+				logx.Silent(r.Addr.String(), crack.String())
 			}
 		}
 	}

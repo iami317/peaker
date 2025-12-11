@@ -12,7 +12,7 @@ type IpAddr struct {
 }
 
 func (i IpAddr) String() string {
-	return fmt.Sprintf("ip:%s port:%d protocol:%v", i.Ip, i.Port, i.Protocol)
+	return fmt.Sprintf("ip:%s port:%d protocol:%v ", i.Ip, i.Port, i.Protocol)
 }
 
 type Crack struct {
@@ -23,7 +23,7 @@ type Crack struct {
 }
 
 func (c Crack) String() string {
-	return fmt.Sprintf("user:%v pass:%v class:%v result:%v", c.User, c.Pass, plugins.ClassMap[plugins.Class(c.Class)], c.Result)
+	return fmt.Sprintf("用户:%v 密码:%v 类型:%v 结果:%v", c.User, c.Pass, plugins.ClassMap[plugins.Class(c.Class)], c.Result)
 }
 
 type ResultOut struct {

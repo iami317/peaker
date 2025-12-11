@@ -1,42 +1,47 @@
 # peaker
 
-一款高质量的弱口令扫描工具
+一款高质量的弱口令扫描工具,目前支持市面大部分协议31种
 支持的协议
-1. couchdb 
-2. 达梦数据库
-3. docker_api 
-4. elasticsearch 
-5. ftp
-6. hadoop 
-7. hive(暂不支持)
-8. kibana (暂不支持)
-9. ldap 
-10. memcache 
-11. mongodb 
-12. mssql 
-13. mysql 
-14. oracle (暂不支持)
-15. pgsql 
-16. rdp 
-17. redis 
-18. smb 
-19. snmp 
-20. solr 
-21. ssh 
-22. telnet 
-23. tomcat
-24. sqlserver //todo
-25. WinRM
-26. VNC
-27. SVN
-28. WebLogic
-29. jboss
-30. zookeeper
-31. wmi
-32. smtp
-33. pop3
-34. iamp
-35. webdav
+1. amqp
+2. couchdb 
+3. 达梦数据库
+4. docker_api
+5. elastic
+6. ftp
+7. hadoop 
+8. hive
+9. kibana
+10. ldap 
+11. memcache 
+12. mongodb
+13. mqtt
+14. mssql 
+15. mysql
+16. neutron
+17. oracle 
+18. pop3
+19. pgsql 
+20. rdp 
+21. redis
+22. rsync
+23. smb 
+24. snmp 
+25. socks5
+26. solr 
+27. ssh 
+28. telnet 
+29. tomcat
+30. vnc
+31. zookeeper
+32. sqlserver // todo
+33. WinRM // todo
+34. SVN // todo
+35. WebLogic // todo
+36. jboss // todo
+37. wmi // todo
+38. smtp // todo
+39. iamp // todo
+40. webdav // todo
 
 使用方法参考 _example/main.go
 
@@ -54,10 +59,10 @@
  ## 构建编译
 (如果windows下执行错误，单个设置环境变量)
 ### windows：
-    go build -o peaker.exe ./cmd/main.go
+    go build -o peaker.exe ./_example/main.go
 ### linux: 
     set CGO_ENABLED=0 && set GOOS=linux && set GOARCH=amd64  
-    go build -o peaker.exe ./cmd/main.go
+    go build -o peaker.exe ./_example/main.go
 ### mac:
     set CGO_ENABLED=0 && set GOOS=darwin && set GOARCH=amd64  
-    go build -o peaker.exe ./cmd/main.go
+    go build -o peaker.exe ./_example/main.go

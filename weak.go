@@ -78,7 +78,7 @@ func (w *Weak) RunTask(ipList []IpAddr, usersDict []string, passDict []string, r
 		}
 		close(resultChan)
 	}()
-	w.Config.Logger.Verbosef("Start scanning %v targets", len(ipList))
+	w.Config.Logger.Verbosef("start scanning %v targets", len(ipList))
 	//是否检查ip是否存活
 	if w.Config.CheckAlive {
 		ipList = w.CheckAlive(ipList)
@@ -192,11 +192,11 @@ func (w *Weak) RunIp(i interface{}) {
 		Password: "",
 	}
 	if w.Config.DebugMode {
-		w.Config.Logger.Verbosef("START=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, "空", "空")
+		w.Config.Logger.Verbosef("start => ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", param.Ip, param.Port, param.Protocol, "空", "空")
 	}
 	r, err := unauthorizedFuncPool.ProcessTimed(param, param.TimeOut)
 	if err != nil && w.Config.DebugMode {
-		w.Config.Logger.Errorf("TIMEOUT=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v ERR:%v", param.Ip, param.Port, param.Protocol, "空", "空", err.Error())
+		w.Config.Logger.Errorf("timeout => ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v ERR:%v", param.Ip, param.Port, param.Protocol, "空", "空", err.Error())
 	}
 	if r != nil {
 		rs := r.(plugins.ScanResult)
@@ -207,7 +207,7 @@ func (w *Weak) RunIp(i interface{}) {
 				Class:  uint(rs.Class),
 				Result: rs.Result,
 			})
-			w.Config.Logger.Verbosef("SUCCESS=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", rs.Single.Ip, rs.Single.Port, rs.Single.Protocol, "空", "空")
+			w.Config.Logger.Verbosef("success => ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", rs.Single.Ip, rs.Single.Port, rs.Single.Protocol, "空", "空")
 			input.ResultChan <- rsOut
 			input.Done <- struct{}{}
 			return
@@ -280,7 +280,7 @@ func (w *Weak) RunIp(i interface{}) {
 										Class:  uint(rs.Class),
 										Result: rs.Result,
 									})
-									l.Verbosef("SUCCESS=> ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", rs.Single.Ip, rs.Single.Port, rs.Single.Protocol, rs.Single.Username, rs.Single.Password)
+									l.Verbosef("success => ip:%v,端口:%v,协议:%v,用户名:%v,密码:%v", rs.Single.Ip, rs.Single.Port, rs.Single.Protocol, rs.Single.Username, rs.Single.Password)
 								}
 							}
 							return
